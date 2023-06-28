@@ -1,0 +1,26 @@
+{
+  "name": "desuex/testtask-user",
+  "description": "User management application",
+  "authors": [
+    {
+      "name": "Evgeniy Kuznetsov",
+      "email": "hire@dsxm.org",
+      "homepage": "https://github.com/desuex",
+      "role": "Maintainer"
+    }
+  ],
+  "require-dev": {
+    "phpunit/phpunit": "*"
+  },
+  "require": {
+    "php": "^8.1",
+    "ext-pdo": "*",
+    "vlucas/phpdotenv": "^5.5",
+    "symfony/dependency-injection": "^6.3"
+  },
+  "autoload": {
+    "psr-4": {
+      "App\\": "src/App"
+    }
+  }
+}
