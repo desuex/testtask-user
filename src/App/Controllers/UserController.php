@@ -14,7 +14,7 @@ class UserController extends BaseController
         $this->repository = $repository;
     }
 
-    public function actionIndex(): bool|array
+    public function index(): bool|array
     {
         return $this->repository->all();
     }

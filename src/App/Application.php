@@ -71,7 +71,7 @@ class Application
     {
         /** @var UserController $controller */
         $controller = self::get('user_controller');
-        $response = $controller->actionIndex();
+        $response = $controller->index();
         if(is_array($response)) {
             $response = new JsonResponse($response);
         } else {
