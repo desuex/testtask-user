@@ -74,4 +74,16 @@ class User extends BaseModel
     {
         return $this->notes;
     }
+
+    public function getProperties(): array
+    {
+        return [
+            'id' => $this->id ?? null,
+            'name' => $this->name ?? null,
+            'email' => $this->email ?? null,
+            'created' => $this->created ?? null,
+            'deleted' => $this->deleted ?? null,
+            'notes' => $this->notes ?? null,
+        ];
+    }
 }

@@ -53,7 +53,8 @@ class Application
             ->addArgument(new Reference('pdo'));
         // Register the UserController service
         $this->container->register('user_controller', UserController::class)
-            ->addArgument(new Reference('user_repository'));
+            ->addArgument(new Reference('user_repository'))
+            ->addArgument(new Reference('request'));
         // Register the IndexController service
         $this->container->register('index_controller', IndexController::class);
 
