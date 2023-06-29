@@ -13,7 +13,11 @@ class UserService
     public function __construct(UserRepository $userRepository)
     {
         $this->userRepository = $userRepository;
+    }
 
+    public function getAllUsers(): array
+    {
+        return $this->userRepository->all();
     }
 
     public function isNameExists($name): bool
