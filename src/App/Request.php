@@ -18,11 +18,11 @@ class Request
         $this->headers = $this->parseRequestHeaders();
         $this->queryParams = $this->parseQueryParams();
         $this->data = $this->parseJsonData();
-        $this->postParams = $_POST;
-        $this->getParams = $_GET;
-        $this->files = $_FILES;
-        $this->server = $_SERVER;
-        $this->session = $_SESSION;
+        $this->postParams = $_POST ?? [];
+        $this->getParams = $_GET ?? [];
+        $this->files = $_FILES ?? [];
+        $this->server = $_SERVER ?? [];
+        $this->session = $_SESSION ?? [];
 
     }
 
@@ -41,7 +41,7 @@ class Request
 
     private function parseQueryParams()
     {
-        parse_str($_SERVER['QUERY_STRING'], $queryParams);
+        parse_str($_SERVER['QUERY_STRING'] ?? "", $queryParams);
         return $queryParams;
     }
 
@@ -104,6 +104,16 @@ class Request
     public function getJsonParam($param)
     {
         return $this->data[$param] ?? null;
+    }
+
+    public function getMethod()
+    {
+        return $this->server['REQUEST_METHOD'];
+    }
+
+    public function getUri()
+    {
+        return $this->server['REQUEST_URI'];
     }
 
 

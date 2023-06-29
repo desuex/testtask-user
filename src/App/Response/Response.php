@@ -2,7 +2,7 @@
 
 namespace App\Response;
 
-abstract class Response
+abstract class Response implements ResponseInterface
 {
     protected array|string|null $content;
 
@@ -16,5 +16,4 @@ abstract class Response
         return $this->content;
     }
 
-    abstract public function send();
 }

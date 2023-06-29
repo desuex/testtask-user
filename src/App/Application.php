@@ -2,11 +2,10 @@
 
 namespace App;
 
+use App\Controllers\IndexController;
 use App\Controllers\UserController;
 use App\Repository\BaseRepository;
 use App\Repository\UserRepository;
-use App\Response\JsonResponse;
-use App\Response\TextResponse;
 use Exception;
 use PDO;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -38,6 +37,8 @@ class Application
         if (empty($_ENV['DB_PATH'])) {
             throw new Exception('DB_PATH environment variable is required to run application!');
         }
+        // Register the Request service
+        $this->container->register('request', Request::class);
         // Register the PDO service
         $this->container->register('pdo', PDO::class)
             ->addArgument('sqlite:' . PROJECT_ROOT . DIRECTORY_SEPARATOR . $_ENV['DB_PATH'])
@@ -53,6 +54,13 @@ class Application
         // Register the UserController service
         $this->container->register('user_controller', UserController::class)
             ->addArgument(new Reference('user_repository'));
+        // Register the IndexController service
+        $this->container->register('index_controller', IndexController::class);
+
+        // Define the routes
+        Route::get('/', 'index_controller', 'index');
+        Route::get('/users', 'user_controller', 'index');
+        Route::post('/users/{id}', 'user_controller', 'create');
     }
 
     /**
@@ -69,14 +77,11 @@ class Application
      */
     public function handle(): void
     {
-        /** @var UserController $controller */
-        $controller = self::get('user_controller');
-        $response = $controller->index();
-        if(is_array($response)) {
-            $response = new JsonResponse($response);
-        } else {
-            $response = new TextResponse($response);
-        }
+        /** @var Request $request */
+        $request = self::get('request');
+
+        $response = Route::dispatch($request->getMethod(), $request->getUri());
+
         $response->send();
     }
 
