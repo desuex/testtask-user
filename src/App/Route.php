@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Controllers\ControllerInterface;
 use App\Exceptions\FileNotFoundException;
 use App\Response\JsonResponse;
 use App\Response\ResponseInterface;
@@ -77,7 +78,7 @@ class Route
     {
         $controllerInstance = Application::get($controller);
 
-        if (method_exists($controllerInstance, $action)) {
+        if ($controllerInstance instanceof ControllerInterface && method_exists($controllerInstance, $action)) {
             return $controllerInstance->$action();
         } else {
             // Handle 404 Not Found if the action does not exist

@@ -59,8 +59,12 @@ class Application
 
         // Define the routes
         Route::get('/', 'index_controller', 'index');
+
         Route::get('/users', 'user_controller', 'index');
+        Route::get('/users/{id}', 'user_controller', 'show');
         Route::post('/users/{id}', 'user_controller', 'create');
+        Route::put('/users/{id}', 'user_controller', 'update');
+        Route::delete('/users/{id}', 'user_controller', 'delete');
     }
 
     /**
