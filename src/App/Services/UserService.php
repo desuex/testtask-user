@@ -15,14 +15,17 @@ class UserService
 {
 
     private UserRepository $userRepository;
-    private User $currentUser;
+    private ?User $currentUser;
+    private LogService $logService;
 
     /**
      * @param UserRepository $userRepository
+     * @param LogService $logService
      */
-    public function __construct(UserRepository $userRepository)
+    public function __construct(UserRepository $userRepository, LogService $logService)
     {
         $this->userRepository = $userRepository;
+        $this->logService = $logService;
     }
 
     /**
@@ -35,11 +38,11 @@ class UserService
     }
 
     /**
-     * @param $asArray
-     * @param $withDeleted
+     * @param bool $asArray
+     * @param bool $withDeleted
      * @return array
      */
-    public function getAllUsers($asArray = false, $withDeleted = false): array
+    public function getAllUsers(bool $asArray = false, bool $withDeleted = false): array
     {
         return $this->userRepository->all($asArray, $withDeleted);
     }
@@ -100,7 +103,12 @@ class UserService
         if (!empty($errors)) {
             throw new ValidationException("Validation error when updating user!", $errors);
         }
-        return $this->userRepository->updateUser($user, $data);
+        $updatedUser = $this->userRepository->updateUser($user, $data);
+        if ($updatedUser instanceof User) {
+            $this->logService->log($updatedUser, "updated");
+        }
+        return $updatedUser;
+
 
     }
 
@@ -115,7 +123,11 @@ class UserService
         if (!$user instanceof User) {
             throw new FileNotFoundException("User not found");
         }
-        return $this->userRepository->deleteUser($user);
+        $success = $this->userRepository->deleteUser($user);
+        if ($success) {
+            $this->logService->log($user, "deleted");
+        }
+        return $success;
     }
 
     /**
@@ -128,10 +140,14 @@ class UserService
     }
 
     /**
-     * @return User|null
+     * @return User
+     * @throws Exception
      */
-    public function getCurrentUser(): ?User
+    public function getCurrentUser(): User
     {
+        if (!$this->currentUser instanceof User) {
+            throw new Exception("Current user is not set");
+        }
         return $this->currentUser;
     }
 }

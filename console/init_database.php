@@ -22,7 +22,7 @@ if (!file_exists($databaseFile)) {
 $pdo = new PDO('sqlite:' . $databaseFile);
 
 // Create the `users` table
-$createTableQuery = "
+$createUsersTableQuery = "
     CREATE TABLE IF NOT EXISTS users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name VARCHAR(64) NOT NULL,
@@ -33,7 +33,7 @@ $createTableQuery = "
     );
 ";
 
-$pdo->exec($createTableQuery);
+$pdo->exec($createUsersTableQuery);
 
 // Create unique indexes
 $createEmailIndexQuery = "CREATE UNIQUE INDEX IF NOT EXISTS users_email_uindex ON users (email);";
@@ -43,3 +43,20 @@ $createNameIndexQuery = "CREATE UNIQUE INDEX IF NOT EXISTS users_name_uindex ON 
 $pdo->exec($createNameIndexQuery);
 
 print_r("Table `users` created successfully!" . PHP_EOL);
+
+// Create the `user_logs` table
+$createUserLogsTableQuery = "
+    CREATE TABLE IF NOT EXISTS user_logs (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER NOT NULL,
+        action TEXT NOT NULL,
+        timestamp DATETIME NOT NULL
+    );
+";
+
+$pdo->exec($createUserLogsTableQuery);
+
+$createUserLogsUserIndexQuery = "CREATE INDEX IF NOT EXISTS user_logs_user_id_index ON user_logs (user_id);";
+$pdo->exec($createUserLogsUserIndexQuery);
+
+print_r("Table `user_logs` created successfully!" . PHP_EOL);
