@@ -4,6 +4,7 @@ namespace Services;
 
 use App\Models\User;
 use App\Repository\UserRepository;
+use App\Services\LogService;
 use App\Services\UserService;
 use PHPUnit\Framework\TestCase;
 
@@ -13,6 +14,8 @@ class UserServiceTest extends TestCase
     {
         // Create a mock UserRepository
         $userRepositoryMock = $this->createMock(UserRepository::class);
+        // Create a mock LogService
+        $logServiceMock = $this->createMock(LogService::class);
 
         $users = [new User(['id' => 1, 'name' => 'John', 'email' => 'john@example.com'])];
         // Define the behavior of the mock UserRepository
@@ -21,7 +24,7 @@ class UserServiceTest extends TestCase
             ->willReturn($users);
 
         // Create an instance of the UserService with the mock UserRepository
-        $userService = new UserService($userRepositoryMock);
+        $userService = new UserService($userRepositoryMock, $logServiceMock);
 
         // Call the method being tested
         $result = $userService->getAllUsers();
@@ -35,6 +38,8 @@ class UserServiceTest extends TestCase
     {
         // Create a mock UserRepository
         $userRepositoryMock = $this->createMock(UserRepository::class);
+        // Create a mock LogService
+        $logServiceMock = $this->createMock(LogService::class);
 
         // Define the behavior of the mock UserRepository
         $userRepositoryMock->expects($this->once())
@@ -43,7 +48,7 @@ class UserServiceTest extends TestCase
             ->willReturn(new User(['id' => 1, 'name' => 'John', 'email' => 'john@example.com']));
 
         // Create an instance of the UserService with the mock UserRepository
-        $userService = new UserService($userRepositoryMock);
+        $userService = new UserService($userRepositoryMock, $logServiceMock);
 
         // Call the method being tested
         $result = $userService->isNameExists('John');
@@ -56,6 +61,8 @@ class UserServiceTest extends TestCase
     {
         // Create a mock UserRepository
         $userRepositoryMock = $this->createMock(UserRepository::class);
+        // Create a mock LogService
+        $logServiceMock = $this->createMock(LogService::class);
 
         // Define the behavior of the mock UserRepository
         $userRepositoryMock->expects($this->once())
@@ -63,8 +70,9 @@ class UserServiceTest extends TestCase
             ->with('John')
             ->willReturn(null);
 
+
         // Create an instance of the UserService with the mock UserRepository
-        $userService = new UserService($userRepositoryMock);
+        $userService = new UserService($userRepositoryMock, $logServiceMock);
 
         // Call the method being tested
         $result = $userService->isNameExists('John');
@@ -77,6 +85,8 @@ class UserServiceTest extends TestCase
     {
         // Create a mock UserRepository
         $userRepositoryMock = $this->createMock(UserRepository::class);
+        // Create a mock LogService
+        $logServiceMock = $this->createMock(LogService::class);
 
         // Define the behavior of the mock UserRepository
         $userRepositoryMock->expects($this->once())
@@ -85,7 +95,7 @@ class UserServiceTest extends TestCase
             ->willReturn(new User(['id' => 1, 'name' => 'John', 'email' => 'john@example.com']));
 
         // Create an instance of the UserService with the mock UserRepository
-        $userService = new UserService($userRepositoryMock);
+        $userService = new UserService($userRepositoryMock, $logServiceMock);
 
         // Call the method being tested
         $result = $userService->isEmailExists('john@example.com');
@@ -99,6 +109,9 @@ class UserServiceTest extends TestCase
         // Create a mock UserRepository
         $userRepositoryMock = $this->createMock(UserRepository::class);
 
+        // Create a mock LogService
+        $logServiceMock = $this->createMock(LogService::class);
+
         // Define the behavior of the mock UserRepository
         $userRepositoryMock->expects($this->once())
             ->method('findByEmail')
@@ -106,7 +119,7 @@ class UserServiceTest extends TestCase
             ->willReturn(null);
 
         // Create an instance of the UserService with the mock UserRepository
-        $userService = new UserService($userRepositoryMock);
+        $userService = new UserService($userRepositoryMock, $logServiceMock);
 
         // Call the method being tested
         $result = $userService->isEmailExists('john@example.com');
