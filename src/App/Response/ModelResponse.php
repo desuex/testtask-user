@@ -4,7 +4,7 @@ namespace App\Response;
 
 use App\Models\BaseModel;
 
-class ModelResponse extends Response
+class ModelResponse extends JsonResponse
 {
 
     public function __construct($content)
@@ -12,10 +12,5 @@ class ModelResponse extends Response
         parent::__construct(null);
         if ($content instanceof BaseModel)
         $this->content = json_encode($content->getProperties());
-    }
-    public function send()
-    {
-        header('Content-Type: application/json');
-        echo $this->content;
     }
 }
