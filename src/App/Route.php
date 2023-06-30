@@ -9,43 +9,85 @@ use App\Response\JsonResponse;
 use App\Response\ModelResponse;
 use App\Response\ResponseInterface;
 use App\Response\TextResponse;
+use Exception;
 
 class Route
 {
-    private array $routes = [];
+    private array $routes;
     private Request $request;
 
-    public function __construct(Request $request, $routes = [])
+    /**
+     * @param Request $request
+     * @param array $routes
+     */
+    public function __construct(Request $request, array $routes = [])
     {
         $this->request = $request;
         $this->routes = $routes;
     }
 
-    public function get(string $path, string $controller, string $action)
+    /**
+     * @param string $path
+     * @param string $controller
+     * @param string $action
+     * @return void
+     */
+    public function get(string $path, string $controller, string $action): void
     {
         $this->addRoute('GET', $path, $controller, $action);
     }
 
-    public function post(string $path, string $controller, string $action)
+    /**
+     * @param string $path
+     * @param string $controller
+     * @param string $action
+     * @return void
+     */
+    public function post(string $path, string $controller, string $action): void
     {
         $this->addRoute('POST', $path, $controller, $action);
     }
 
-    public function put(string $path, string $controller, string $action)
+    /**
+     * @param string $path
+     * @param string $controller
+     * @param string $action
+     * @return void
+     */
+    public function put(string $path, string $controller, string $action): void
     {
         $this->addRoute('PUT', $path, $controller, $action);
     }
 
-    public function patch(string $path, string $controller, string $action)
+    /**
+     * @param string $path
+     * @param string $controller
+     * @param string $action
+     * @return void
+     */
+    public function patch(string $path, string $controller, string $action): void
     {
         $this->addRoute('PATCH', $path, $controller, $action);
     }
 
-    public function delete(string $path, string $controller, string $action)
+    /**
+     * @param string $path
+     * @param string $controller
+     * @param string $action
+     * @return void
+     */
+    public function delete(string $path, string $controller, string $action): void
     {
         $this->addRoute('DELETE', $path, $controller, $action);
     }
 
+    /**
+     * @param string $method
+     * @param string $path
+     * @param string $controller
+     * @param string $action
+     * @return void
+     */
     private function addRoute(string $method, string $path, string $controller, string $action): void
     {
         $this->routes[] = [
@@ -55,6 +97,10 @@ class Route
             'action' => $action,
         ];
     }
+
+    /**
+     * @return array|null
+     */
     public function matchRoute(): ?array
     {
         foreach ($this->routes as $route) {
@@ -75,11 +121,21 @@ class Route
         return null; // No matching route found
     }
 
-    private function buildRegex($pattern) {
+    /**
+     * @param $pattern
+     * @return string
+     */
+    private function buildRegex($pattern): string
+    {
         $regex = preg_replace('#\{(\w+)\}#', '(?<$1>[^/]+)', $pattern);
         return '#^' . str_replace('/', '\/', $regex) . '$#';
     }
 
+    /**
+     * @param $pattern
+     * @param $matches
+     * @return array
+     */
     private function extractParams($pattern, $matches): array
     {
         $params = [];
@@ -94,6 +150,10 @@ class Route
         return $params;
     }
 
+    /**
+     * @return ResponseInterface
+     * @throws FileNotFoundException
+     */
     public function dispatch(): ResponseInterface
     {
         $route = $this->matchRoute();
@@ -101,7 +161,7 @@ class Route
             $response = $this->callControllerAction($route['controller'], $route['action'], $route['params']);
             if (is_array($response)) {
                 return new JsonResponse($response);
-            } elseif ($response instanceof BaseModel){
+            } elseif ($response instanceof BaseModel) {
                 return new ModelResponse($response);
             } else {
                 return new TextResponse($response);
@@ -113,7 +173,15 @@ class Route
 
     }
 
-    private function callControllerAction(string $controller, string $action, $parameters = [])
+    /**
+     * @param string $controller
+     * @param string $action
+     * @param array $parameters
+     * @return mixed
+     * @throws FileNotFoundException
+     * @throws Exception
+     */
+    private function callControllerAction(string $controller, string $action, array $parameters = []): mixed
     {
         $controllerInstance = Application::get($controller);
 
