@@ -34,9 +34,12 @@ class UserRepository extends BaseRepository
      * @param $id
      * @return User|null
      */
-    public function find($id): ?User
+    public function find($id, bool $withDeleted = false): ?User
     {
         $query = 'SELECT * FROM users WHERE id = :id';
+        if (!$withDeleted) {
+            $query .= ' AND deleted IS NULL';
+        }
         $statement = $this->getConnection()->prepare($query);
         $statement->bindParam(':id', $id);
         $statement->execute();
