@@ -6,6 +6,8 @@ use App\Controllers\IndexController;
 use App\Controllers\UserController;
 use App\Repository\BaseRepository;
 use App\Repository\UserRepository;
+use App\Services\UserService;
+use App\Validators\CreateUserValidator;
 use Exception;
 use PDO;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -59,10 +61,17 @@ class Application
         // Register the UserRepository service
         $this->container->register('user_repository', UserRepository::class)
             ->addArgument(new Reference('pdo'));
+        // Register the UserService service
+        $this->container->register('user_service', UserService::class)
+            ->addArgument(new Reference('user_repository'));
         // Register the UserController service
         $this->container->register('user_controller', UserController::class)
-            ->addArgument(new Reference('user_repository'))
+            ->addArgument(new Reference('user_service'))
             ->addArgument(new Reference('request'));
+        // Register CreateUserValidator
+        $this->container->register('create_user_validator', CreateUserValidator::class)
+            ->addArgument(new Reference('user_service'));
+
         // Register the IndexController service
         $this->container->register('index_controller', IndexController::class);
 
@@ -82,7 +91,7 @@ class Application
         $route->get('/', 'index_controller', 'index');
         $route->get('/users', 'user_controller', 'index');
         $route->get('/users/{id}', 'user_controller', 'show');
-        $route->post('/users/{id}', 'user_controller', 'create');
+        $route->post('/users', 'user_controller', 'create');
         $route->put('/users/{id}', 'user_controller', 'update');
         $route->delete('/users/{id}', 'user_controller', 'delete');
     }

@@ -2,29 +2,43 @@
 
 namespace App\Controllers;
 
+use App\Exceptions\ValidationException;
 use App\Models\User;
-use App\Repository\UserRepository;
 use App\Request;
+use App\Services\UserService;
 
 class UserController extends BaseController
 {
 
-    private UserRepository $repository;
+    private UserService $service;
     private Request $request;
 
-    public function __construct(UserRepository $repository, Request $request)
+    public function __construct(UserService $service, Request $request)
     {
-        $this->repository = $repository;
+        $this->service = $service;
         $this->request = $request;
     }
 
     public function index(): bool|array
     {
-        return $this->repository->all();
+        return $this->service->getAllUsers(true);
     }
 
     public function show($id): ?User
     {
-        return new User(['id' => $id, 'name' => 'John']);
+        return $this->service->getUser($id);
+    }
+
+    public function create(): User|array|null
+    {
+        $data = $this->request->getJsonParams();
+        try {
+            return $this->service->createUser($data);
+        } catch (ValidationException $exception) {
+            return [
+                "error" => $exception->getMessage(),
+                "data" => $exception->getErrors()
+            ];
+        }
     }
 }

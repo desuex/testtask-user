@@ -62,7 +62,7 @@ class Request
 
     public function getHeader($name)
     {
-        return $this->headers[$name] ?? null;
+        return $this->headers[strtoupper($name)] ?? null;
     }
 
     public function getPostParams(): array
