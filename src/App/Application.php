@@ -39,6 +39,11 @@ class Application
         }
         // Register the Request service
         $this->container->register('request', Request::class);
+
+        // Register the Route service
+        $this->container->register('route', Route::class)
+            ->addArgument(new Reference('request'));
+
         // Register the PDO service
         $this->container->register('pdo', PDO::class)
             ->addArgument('sqlite:' . PROJECT_ROOT . DIRECTORY_SEPARATOR . $_ENV['DB_PATH'])
@@ -58,14 +63,22 @@ class Application
         // Register the IndexController service
         $this->container->register('index_controller', IndexController::class);
 
-        // Define the routes
-        Route::get('/', 'index_controller', 'index');
+        $this->routes();
 
-        Route::get('/users', 'user_controller', 'index');
-        Route::get('/users/{id}', 'user_controller', 'show');
-        Route::post('/users/{id}', 'user_controller', 'create');
-        Route::put('/users/{id}', 'user_controller', 'update');
-        Route::delete('/users/{id}', 'user_controller', 'delete');
+    }
+
+    private function routes(): void
+    {
+        /** @var Route $route */
+        $route = self::get('route');
+
+        // Define the routes
+        $route->get('/', 'index_controller', 'index');
+        $route->get('/users', 'user_controller', 'index');
+        $route->get('/users/{id}', 'user_controller', 'show');
+        $route->post('/users/{id}', 'user_controller', 'create');
+        $route->put('/users/{id}', 'user_controller', 'update');
+        $route->delete('/users/{id}', 'user_controller', 'delete');
     }
 
     /**
@@ -82,11 +95,9 @@ class Application
      */
     public function handle(): void
     {
-        /** @var Request $request */
-        $request = self::get('request');
-
-        $response = Route::dispatch($request->getMethod(), $request->getUri());
-
+        /** @var Route $route */
+        $route = self::get('route');
+        $response = $route->dispatch();
         $response->send();
     }
 
