@@ -41,4 +41,24 @@ class UserController extends BaseController
             ];
         }
     }
+
+    public function update($id): User|array|null
+    {
+        $data = $this->request->getJsonParams();
+        try {
+            return $this->service->updateUser($id, $data);
+        } catch (ValidationException $exception) {
+            return [
+                "error" => $exception->getMessage(),
+                "data" => $exception->getErrors()
+            ];
+        }
+    }
+
+    public function delete($id): array
+    {
+        return ["deleted" => $this->service->deleteUser($id) ? "true" : "false"];
+    }
+
+
 }

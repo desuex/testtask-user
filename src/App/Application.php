@@ -8,6 +8,7 @@ use App\Repository\BaseRepository;
 use App\Repository\UserRepository;
 use App\Services\UserService;
 use App\Validators\CreateUserValidator;
+use App\Validators\UpdateUserValidator;
 use Exception;
 use PDO;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -70,6 +71,9 @@ class Application
             ->addArgument(new Reference('request'));
         // Register CreateUserValidator
         $this->container->register('create_user_validator', CreateUserValidator::class)
+            ->addArgument(new Reference('user_service'));
+        // Register UpdateUserValidator
+        $this->container->register('update_user_validator', UpdateUserValidator::class)
             ->addArgument(new Reference('user_service'));
 
         // Register the IndexController service
