@@ -22,7 +22,7 @@ class Application
 
     }
 
-    public static function getInstance()
+    public static function getInstance(): Application
     {
         if (self::$instance === null) {
             self::$instance = new self();
@@ -32,6 +32,9 @@ class Application
     }
 
 
+    /**
+     * @throws Exception
+     */
     public function boot(): void
     {
         if (empty($_ENV['DB_PATH'])) {
@@ -67,6 +70,9 @@ class Application
 
     }
 
+    /**
+     * @throws Exception
+     */
     private function routes(): void
     {
         /** @var Route $route */
