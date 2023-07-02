@@ -136,13 +136,13 @@ class UserValidator extends BaseValidator
             $createdDateTime = new DateTime($created);
             $deletedDateTime = new DateTime($deleted);
 
-            if ($deletedDateTime < $createdDateTime) {
-                return false;
+            if ($deletedDateTime >= $createdDateTime) {
+                return true;
             }
         } catch (Exception $exception) {
             // If invalid datetime is used
             return false;
         }
-        return true;
+        return false;
     }
 }
