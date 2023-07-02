@@ -68,18 +68,20 @@ class Application
         // Register the LogService
         $this->container->register('log_service', LogService::class)
             ->addArgument(new Reference('user_log_repository'));
-        // Register the UserService
-        $this->container->register('user_service', UserService::class)
-            ->addArgument(new Reference('user_repository'))
-            ->addArgument(new Reference('log_service'));
-
 
         // Register CreateUserValidator
         $this->container->register('create_user_validator', CreateUserValidator::class)
-            ->addArgument(new Reference('user_service'));
+            ->addArgument(new Reference('user_repository'));
         // Register UpdateUserValidator
         $this->container->register('update_user_validator', UpdateUserValidator::class)
-            ->addArgument(new Reference('user_service'));
+            ->addArgument(new Reference('user_repository'));
+
+        // Register the UserService
+        $this->container->register('user_service', UserService::class)
+            ->addArgument(new Reference('user_repository'))
+            ->addArgument(new Reference('log_service'))
+            ->addArgument(new Reference('create_user_validator'))
+            ->addArgument(new Reference('update_user_validator'));
 
         // Register the UserController
         $this->container->register('user_controller', UserController::class)

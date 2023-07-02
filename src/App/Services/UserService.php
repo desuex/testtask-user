@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Application;
 use App\Exceptions\FileNotFoundException;
 use App\Exceptions\ValidationException;
 use App\Models\User;
@@ -17,15 +16,23 @@ class UserService
     private UserRepository $userRepository;
     private ?User $currentUser;
     private LogService $logService;
+    private CreateUserValidator $createUserValidator;
+    private UpdateUserValidator $updateUserValidator;
 
     /**
      * @param UserRepository $userRepository
      * @param LogService $logService
+     * @param CreateUserValidator $createUserValidator
+     * @param UpdateUserValidator $updateUserValidator
      */
-    public function __construct(UserRepository $userRepository, LogService $logService)
+    public function __construct(UserRepository      $userRepository, LogService $logService,
+                                CreateUserValidator $createUserValidator,
+                                UpdateUserValidator $updateUserValidator)
     {
         $this->userRepository = $userRepository;
         $this->logService = $logService;
+        $this->createUserValidator = $createUserValidator;
+        $this->updateUserValidator = $updateUserValidator;
     }
 
     /**
@@ -48,34 +55,13 @@ class UserService
     }
 
     /**
-     * @param $name
-     * @return bool
-     */
-    public function isNameExists($name): bool
-    {
-        $user = $this->userRepository->findByName($name);
-        return $user instanceof User;
-    }
-
-    /**
-     * @param $email
-     * @return bool
-     */
-    public function isEmailExists($email): bool
-    {
-        $user = $this->userRepository->findByEmail($email);
-        return $user instanceof User;
-    }
-
-    /**
      * @throws ValidationException
      * @throws Exception
      */
     public function createUser(array $data): ?User
     {
         /** @var CreateUserValidator $validator */
-        $validator = Application::get('create_user_validator');
-        $errors = $validator->validate($data);
+        $errors = $this->createUserValidator->validate($data);
         if (!empty($errors)) {
             throw new ValidationException("Validation error when creating user!", $errors);
         }
@@ -97,9 +83,7 @@ class UserService
             throw new FileNotFoundException("User not found");
         }
         $this->setCurrentUser($user);
-        /** @var UpdateUserValidator $validator */
-        $validator = Application::get('update_user_validator');
-        $errors = $validator->validate($data);
+        $errors = $this->updateUserValidator->validate($data);
         if (!empty($errors)) {
             throw new ValidationException("Validation error when updating user!", $errors);
         }

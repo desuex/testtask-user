@@ -2,17 +2,17 @@
 
 namespace App\Validators;
 
-use App\Services\UserService;
+use App\Repository\UserRepository;
 use DateTime;
 use Exception;
 
 class UserValidator extends BaseValidator
 {
-    protected UserService $userService;
+    protected UserRepository $userRepository;
 
-    public function __construct(UserService $userService)
+    public function __construct(UserRepository $userRepository)
     {
-        $this->userService = $userService;
+        $this->userRepository = $userRepository;
     }
 
     public function validate($input): array
@@ -82,7 +82,7 @@ class UserValidator extends BaseValidator
     protected function isNameUnique($name): bool
     {
         // Check if the name is unique in the database
-        return !$this->userService->isNameExists($name);
+        return !$this->userRepository->findByName($name);
     }
 
     /**
@@ -117,7 +117,7 @@ class UserValidator extends BaseValidator
     protected function isEmailUnique($email): bool
     {
         // Check if the email is unique in the database
-        return !$this->userService->isEmailExists($email);
+        return !$this->userRepository->findByEmail($email);
     }
 
 
